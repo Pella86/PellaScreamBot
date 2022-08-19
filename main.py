@@ -25,10 +25,8 @@ import Updater
 class Bot:
     
     telegram_api = Requests.tg_requests
-    
-    
+
     def __init__(self):
-        
         r = self.telegram_api.getMe()
         rjson = r.json()
     
@@ -42,7 +40,7 @@ class Bot:
         
     def sendHelpMessage(self, chat_id):
         
-        text = "Hello, I'm Pella Scream Bot\nUse me inline with <code>@pellascreambot ...text...</code>, then chose any option."
+        text = "Hello, I'm Pella Scream Bot\nUse me inline with\n<code>@pellascreambot ...text...</code>\n, then chose any option."
         
         self.sendMessage(chat_id, text)
 
@@ -123,43 +121,64 @@ def cross_shape(text):
 
 class ResultArticle:
     
-    def __init__(self, shape, text, org_text):
+    def __init__(self, shape, text):
         
-        message = dict({"message_text": text,
+        # limit text to 100 characters
+        text = text[:100]
+                
+        # uppercase
+        text = text.upper()
+        
+        # strip lose stuff
+        text = text.strip()
+        
+        if shape == "L shape":
+            mod_text = l_shape(text)
+        elif shape == "Diamond":
+            mod_text = diamond_shape(text)
+        elif shape == "Cross":
+            mod_text = cross_shape(text)
+        else:
+            mod_text = text
+            print("shape not found")
+    
+        message = dict({"message_text": mod_text,
                     "parse_mode":"HTML"}) 
         
-        text_id = hashlib.md5(text.encode()).hexdigest()
+        text_id = hashlib.md5(mod_text.encode()).hexdigest()
         
         self.result = dict({"type":"article",
                                "id": text_id,
-                               "title": shape + ": " + org_text[:15],
+                               "title": shape + ": " + text[:15],
                                "input_message_content": message})
 
 if __name__ == "__main__":
     
+    # start the bot
     bot = Bot()
-
+    
+    # start the messsage updater
     update = Updater.Update()
     
-
+    # main loop
     while True:
+        # dont spam requests
         time.sleep(0.1)
-        
-        
-        new_messages = update.getUpdates()
 
+        # get the messages updates
+        new_messages = update.getUpdates()
+        
+        # do the thingy
         try:
             
             for message in new_messages:
                 
+                # if is a private message 
                 if "message" in message:
                     chat_id = message["message"]["chat"]["id"]
-                    
                     bot.sendHelpMessage(chat_id)
-                    
-
-                                        
                 
+                # answer the query
                 if "inline_query" in message:
                     inline_query = message["inline_query"]
                     
@@ -167,38 +186,32 @@ if __name__ == "__main__":
                     
                     if text:
                         
-                        # limit text to 100 characters
-                        text = text[:100]
+                        # available shapes
+                        shapes = ["L shape" , "Diamond", "Cross"]
+                        
+                        # array to be visualized as options
+                        query_results_array = []
+                        
+                        # options
+                        for shape in shapes:
+                            result = ResultArticle(shape, text)
+                            query_results_array.append(result.result)
+                         
+                        # show the stuff
+                        resp = Requests.tg_requests.answerInlineQuery(inline_query["id"], json.dumps(query_results_array))
                         
                         
-                        # uppercase
-                        text = text.upper()
-                        
-                        
-                        
-                        l_shape_text = l_shape(text)
-                        diamond_shape_text = diamond_shape(text)
-                        cross_sahpe_text = cross_shape(text)
-                        
-                        result_l_shape = ResultArticle("L shape", l_shape_text, text)
-                        result_diamond = ResultArticle("Diamond", diamond_shape_text, text)
-                        result_cross = ResultArticle("Cross", cross_sahpe_text, text)
-                        
+                        if resp.status_code == 200:
+                            print(message["inline_query"]["from"]["first_name"], "@" + message["inline_query"]["from"]["username"], text)
 
-                        
-                        query_result_array = [result_l_shape.result,
-                                              result_diamond.result,
-                                              result_cross.result]
-                        
-                        resp = Requests.tg_requests.answerInlineQuery(inline_query["id"], json.dumps(query_result_array))
-                        
-
-                
-                    
-                
+        # in case the message is not a query       
         except KeyError as e:
-            print("key:", e)
+            # print where the error is
+            print("Error key:", e)
             print(traceback.format_exc())
             
-            print("message parsing error")
+            # print where the message
+            print("------ message parsing error --------")
             print(json.dumps(message, indent=4))
+            
+            

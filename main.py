@@ -141,16 +141,35 @@ class ResultArticle:
         else:
             mod_text = text
             print("shape not found")
+            
+        if len(mod_text) < 4096:
+
+            message = dict({"message_text": mod_text,
+                        "parse_mode":"HTML"}) 
+            text_id = hashlib.md5(mod_text.encode()).hexdigest()
+            
+            
+            
+            self.result = dict({"type":"article",
+                                   "id": text_id,
+                                   "title": shape + ": " + text[:15],
+                                   "input_message_content": message}) 
+        else:
+            
+            message = dict({"message_text": "ERROR: message too long",
+                        "parse_mode":"HTML"}) 
+            text_id = hashlib.md5(mod_text.encode()).hexdigest()
+            
+            
+            
+            self.result = dict({"type":"article",
+                                   "id": text_id,
+                                   "title": shape + ": " + "message too long",
+                                   "input_message_content": message}) 
+
+
     
-        message = dict({"message_text": mod_text,
-                    "parse_mode":"HTML"}) 
-        
-        text_id = hashlib.md5(mod_text.encode()).hexdigest()
-        
-        self.result = dict({"type":"article",
-                               "id": text_id,
-                               "title": shape + ": " + text[:15],
-                               "input_message_content": message})
+            
 
 if __name__ == "__main__":
     
@@ -202,8 +221,17 @@ if __name__ == "__main__":
                         
                         
                         if resp.status_code == 200:
-                            print(message["inline_query"]["from"]["first_name"], "@" + message["inline_query"]["from"]["username"], text)
-
+                            print(message["inline_query"]["from"]["first_name"], "@" + str(message["inline_query"]["from"].get("username")), text)
+                        
+                        if resp.status_code == 400:
+                            print("ERROR: inline_query", text)
+                            respj = resp.json()
+                            if respj["description"] == "Bad Request: MESSAGE_TOO_LONG":
+                                res_article = ResultArticle("Bad request", "message too long")
+                                query_array = [res_article.result]
+                                resp = Requests.tg_requests.answerInlineQuery(inline_query["id"], json.dumps(query_array))
+                                
+                            
         # in case the message is not a query       
         except KeyError as e:
             # print where the error is

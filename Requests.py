@@ -77,6 +77,7 @@ class Requests:
             
             if response.status_code != 200:
                print(response.status_code, response.text)
+               return response
             
             if response:
                 return response            

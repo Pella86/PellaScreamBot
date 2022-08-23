@@ -16,6 +16,7 @@ import traceback
 
 import Requests
 import Updater
+import UnicodeFonts
 
 
 # =============================================================================
@@ -114,6 +115,18 @@ def cross_shape(text):
     
     return mod_text
 
+def upside_down(text):
+    mod_text = "<code>" + UnicodeFonts.upside_down(text) + "</code>"
+    return mod_text
+
+def fraktur(text):
+    mod_text = "<code>" + UnicodeFonts.fraktur(text) + "</code>"
+    return mod_text
+
+def double_struck(text):
+    mod_text = "<code>" + UnicodeFonts.double_struck(text) + "</code>"
+    return mod_text    
+
 
 # =============================================================================
 # Query option generation
@@ -123,8 +136,8 @@ class ResultArticle:
     
     def __init__(self, shape, text):
         
-        # limit text to 100 characters
-        text = text[:100]
+        # # limit text to 100 characters
+        # text = text[:100]
                 
         # uppercase
         text = text.upper()
@@ -134,10 +147,22 @@ class ResultArticle:
         
         if shape == "L shape":
             mod_text = l_shape(text)
+            
         elif shape == "Diamond":
             mod_text = diamond_shape(text)
+            
         elif shape == "Cross":
             mod_text = cross_shape(text)
+            
+        elif shape == "Upside Down":
+            mod_text = upside_down(text)
+
+        elif shape == "Fraktur":
+            mod_text = fraktur(text)
+        
+        elif shape == "Double Struck":
+            mod_text = double_struck(text)
+            
         else:
             mod_text = text
             print("shape not found")
@@ -206,7 +231,7 @@ if __name__ == "__main__":
                     if text:
                         
                         # available shapes
-                        shapes = ["L shape" , "Diamond", "Cross"]
+                        shapes = ["L shape" , "Diamond", "Cross", "Upside Down", "Fraktur", "Double Struck"]
                         
                         # array to be visualized as options
                         query_results_array = []

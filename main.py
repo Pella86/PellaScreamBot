@@ -139,19 +139,22 @@ class ResultArticle:
         # # limit text to 100 characters
         # text = text[:100]
                 
-        # uppercase
-        text = text.upper()
+
         
         # strip lose stuff
         text = text.strip()
         
+    
         if shape == "L shape":
+            text = text.upper()
             mod_text = l_shape(text)
             
         elif shape == "Diamond":
+            text = text.upper()
             mod_text = diamond_shape(text)
             
         elif shape == "Cross":
+            text = text.upper()
             mod_text = cross_shape(text)
             
         elif shape == "Upside Down":
@@ -171,7 +174,7 @@ class ResultArticle:
 
             message = dict({"message_text": mod_text,
                         "parse_mode":"HTML"}) 
-            text_id = hashlib.md5(mod_text.encode()).hexdigest()
+            text_id = hashlib.md5((shape + mod_text).encode()).hexdigest()
             
             
             

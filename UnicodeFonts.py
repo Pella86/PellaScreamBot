@@ -103,7 +103,7 @@ def upside_down(text):
 
 
 def fraktur(text):
-    start = 0x1D504
+    start = 0x1D56C
     #end = 0x1D537
     
     capitals = string.ascii_uppercase
@@ -114,18 +114,7 @@ def fraktur(text):
     ascii_to_fraktur = {}
     
     for l in alphabet:
-        if l == "C":
-            ascii_to_fraktur[l] = "\u212D"
-        elif l == "H":
-            ascii_to_fraktur[l] = "\u210C"
-        elif l == "I":
-            ascii_to_fraktur[l] = "\u2111"        
-        elif l == "R":
-            ascii_to_fraktur[l] = "\u211C"
-        elif l == "Z":
-            ascii_to_fraktur[l] = "\u2128"
-        else:
-            ascii_to_fraktur[l] = chr(start)
+        ascii_to_fraktur[l] = chr(start)
         start += 1
     
     s = ""

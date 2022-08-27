@@ -127,6 +127,10 @@ def double_struck(text):
     mod_text = "<code>" + UnicodeFonts.double_struck(text) + "</code>"
     return mod_text    
 
+def echo(text):
+    mod_text = "<code>" + UnicodeFonts.echo_text(text) + "</code>"
+    return mod_text
+
 
 # =============================================================================
 # Query option generation
@@ -165,6 +169,9 @@ class ResultArticle:
         
         elif shape == "Double Struck":
             mod_text = double_struck(text)
+        
+        elif shape == "Echo":
+            mod_text = echo(text)
             
         else:
             mod_text = text
@@ -234,7 +241,9 @@ if __name__ == "__main__":
                     if text:
                         
                         # available shapes
-                        shapes = ["L shape" , "Diamond", "Cross", "Upside Down", "Fraktur", "Double Struck"]
+                        shapes = ["L shape" , "Diamond", "Cross",
+                                  "Upside Down", "Fraktur", "Double Struck",
+                                  "Echo"]
                         
                         # array to be visualized as options
                         query_results_array = []

@@ -1,1 +1,0 @@
-telegram_bot: python main.py

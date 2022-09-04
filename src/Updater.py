@@ -10,7 +10,7 @@ import pathlib
 import pickle
 import json
 
-import Requests
+import src.Requests
 
 # =============================================================================
 # Database
@@ -54,7 +54,7 @@ class Database:
 class Update:
     
     update_filename = "./databases/update_database.pkl"
-    update_log_filename = "./logs/message_log.txt"
+    # update_log_filename = "./logs/message_log.txt"
     
     def __init__(self):
         
@@ -64,9 +64,9 @@ class Update:
         # current index
         self.index = 0
         
-        if not pathlib.Path(self.update_log_filename).exists():
-            with open(self.update_log_filename, "w") as f:
-                f.write("header\n")
+        # if not pathlib.Path(self.update_log_filename).exists():
+        #     with open(self.update_log_filename, "w") as f:
+        #         f.write("header\n")
                 
     
     
@@ -79,7 +79,7 @@ class Update:
             
             # request the updates from the api
             params = {"offset": self.index}
-            r = Requests.tg_requests.getUpdates(params)   
+            r = src.Requests.tg_requests.getUpdates(params)   
             rjson = r.json()     
             
             
@@ -114,8 +114,8 @@ class Update:
                 self.database.data.append(update_id)
                 self.database.save()
                 
-                # log the messages for further use 
-                with open(self.update_log_filename, "a") as f:
-                    f.write(json.dumps(message) + "\n")
+                # # log the messages for further use 
+                # with open(self.update_log_filename, "a") as f:
+                #     f.write(json.dumps(message) + "\n")
         
         return new_messages

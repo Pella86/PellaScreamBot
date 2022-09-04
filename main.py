@@ -14,36 +14,12 @@ import hashlib
 import json
 import traceback
 
-import Requests
-import Updater
-import UnicodeFonts
 
-
-# =============================================================================
-# Bot class
-# =============================================================================
-
-class Bot:
-    
-    telegram_api = Requests.tg_requests
-
-    def __init__(self):
-        r = self.telegram_api.getMe()
-        rjson = r.json()
-    
-        print("Bot:", rjson["result"]["first_name"], "@" + rjson["result"]["username"])
-    
-    
-    def sendMessage(self, chat_id, text, parse_mode="HTML"):
-        params= {"chat_id":chat_id, "text":text, "parse_mode":parse_mode}
-                
-        self.telegram_api.sendMessage(params)  
-        
-    def sendHelpMessage(self, chat_id):
-        
-        text = "Hello, I'm Pella Scream Bot\nUse me inline with\n<code>@pellascreambot ...text...</code>\n, then chose any option."
-        
-        self.sendMessage(chat_id, text)
+import src.Requests
+import src.Updater
+import src.Bot
+import src.UnicodeFonts
+import src.TelegramObjects as tg_obj
 
 
 # =============================================================================
@@ -116,19 +92,19 @@ def cross_shape(text):
     return mod_text
 
 def upside_down(text):
-    mod_text = "<code>" + UnicodeFonts.upside_down(text) + "</code>"
+    mod_text = "<code>" + src.UnicodeFonts.upside_down(text) + "</code>"
     return mod_text
 
 def fraktur(text):
-    mod_text = "<code>" + UnicodeFonts.fraktur(text) + "</code>"
+    mod_text = "<code>" + src.UnicodeFonts.fraktur(text) + "</code>"
     return mod_text
 
 def double_struck(text):
-    mod_text = "<code>" + UnicodeFonts.double_struck(text) + "</code>"
+    mod_text = "<code>" + src.UnicodeFonts.double_struck(text) + "</code>"
     return mod_text    
 
 def echo(text):
-    mod_text = "<code>" + UnicodeFonts.echo_text(text) + "</code>"
+    mod_text = "<code>" + src.UnicodeFonts.echo_text(text) + "</code>"
     return mod_text
 
 
@@ -203,16 +179,27 @@ class ResultArticle:
                                    "input_message_content": message}) 
 
 
+# =============================================================================
+# Pella scream bot
+# =============================================================================
     
-            
+class PellaScreamBot(src.Bot.Bot):
+    
+    def __init__(self):
+        super().__init__()
+        
+    def sendHelpMessage(self, chat_id):
+        text = "Hello, I'm Pella Scream Bot\nUse me inline with\n<code>@pellascreambot ...text...</code>\nthen chose any option."
+        self.sendMessage(chat_id, text)
 
 if __name__ == "__main__":
     
     # start the bot
-    bot = Bot()
+    bot = PellaScreamBot()
     
     # start the messsage updater
-    update = Updater.Update()
+    updater = src.Updater.Update()
+    
     
     # main loop
     while True:
@@ -220,23 +207,23 @@ if __name__ == "__main__":
         time.sleep(0.1)
 
         # get the messages updates
-        new_messages = update.getUpdates()
+        new_updates = updater.getUpdates()
         
         # do the thingy
         try:
             
-            for message in new_messages:
+            for update in new_updates:
                 
-                # if is a private message 
-                if "message" in message:
-                    chat_id = message["message"]["chat"]["id"]
-                    bot.sendHelpMessage(chat_id)
+                # if is a private update 
+                if "message" in update:
+                    message = tg_obj.Message(update["message"])
+                    bot.sendHelpMessage(message.chat.id)
                 
                 # answer the query
-                if "inline_query" in message:
-                    inline_query = message["inline_query"]
+                if "inline_query" in update:
+                    inline_query = tg_obj.InlineQuery(update["inline_query"])
                     
-                    text = inline_query["query"]
+                    text = inline_query.text
                     
                     if text:
                         
@@ -254,11 +241,11 @@ if __name__ == "__main__":
                             query_results_array.append(result.result)
                          
                         # show the stuff
-                        resp = Requests.tg_requests.answerInlineQuery(inline_query["id"], json.dumps(query_results_array))
+                        resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_results_array))
                         
                         
                         if resp.status_code == 200:
-                            print(message["inline_query"]["from"]["first_name"], "@" + str(message["inline_query"]["from"].get("username")), text)
+                            print(inline_query.user, text)
                         
                         if resp.status_code == 400:
                             print("ERROR: inline_query", text)
@@ -266,7 +253,7 @@ if __name__ == "__main__":
                             if respj["description"] == "Bad Request: MESSAGE_TOO_LONG":
                                 res_article = ResultArticle("Bad request", "message too long")
                                 query_array = [res_article.result]
-                                resp = Requests.tg_requests.answerInlineQuery(inline_query["id"], json.dumps(query_array))
+                                resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_array))
                                 
                             
         # in case the message is not a query       
@@ -277,6 +264,6 @@ if __name__ == "__main__":
             
             # print where the message
             print("------ message parsing error --------")
-            print(json.dumps(message, indent=4))
+            print(json.dumps(update, indent=4))
             
             

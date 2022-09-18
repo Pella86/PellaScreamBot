@@ -49,7 +49,6 @@ class Requests:
             
             response = reqfunc(url, params)
             
-            
             return response
         
         else:

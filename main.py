@@ -13,6 +13,7 @@ import time
 import hashlib
 import json
 import traceback
+import random
 
 
 import src.Requests
@@ -108,6 +109,69 @@ def echo(text):
     return mod_text
 
 
+zalgo_symbols = ['̖',' ̗',' ̘',' ̙',' ̜',' ̝',' ̞',' ̟',' ̠',' ̤',' ̥',' ̦',' ̩',' ̪',' ̫',' ̬',' ̭',' ̮',' ̯',' ̰',' ̱',' ̲',' ̳',' ̹',' ̺',' ̻',' ̼',' ͅ',' ͇',' ͈',' ͉',' ͍',' ͎',' ͓',' ͔',' ͕',' ͖',' ͙',' ͚',' ', ' ̍',' ̎',' ̄',' ̅',' ̿',' ̑',' ̆',' ̐',' ͒',' ͗',' ͑',' ̇',' ̈',' ̊',' ͂',' ̓',' ̈́',' ͊',' ͋',' ͌',' ̃',' ̂',' ̌',' ͐',' ́',' ̋',' ̏',' ̽',' ̉',' ͣ',' ͤ',' ͥ',' ͦ',' ͧ',' ͨ',' ͩ',' ͪ',' ͫ',' ͬ',' ͭ',' ͮ',' ͯ',' ̾',' ͛',' ͆',' ̚', ' ̕',' ̛',' ̀',' ́',' ͘',' ̡',' ̢',' ̧',' ̨',' ̴',' ̵',' ̶',' ͜',' ͝',' ͞',' ͟',' ͠',' ͢',' ̸',' ̷',' ͡']
+
+zalgo_symbols = list(map(lambda x : x.strip(), zalgo_symbols))
+
+def zalgo(text):
+    
+    mod_text = ""
+    for letter in text:
+         
+        
+        if letter.isalpha():
+            n_symbols = random.randint(5, 10)
+            
+            accents = "".join([random.choice(zalgo_symbols) for i in range(n_symbols)])
+            
+            new_character = letter + accents
+            
+            mod_text += new_character
+        else:
+            mod_text += letter
+
+    #mod_text = "<code>" + mod_text + "</code>"        
+
+    return mod_text
+
+def sauwastika(text):
+    
+    l_text = len(text)
+    
+    mod_text = ""
+    
+    rev_text = text[::-1]
+    
+    # first line
+    line = rev_text + " "*(l_text-2) + rev_text[0] + "\n"
+    mod_text += " ".join(list(line))
+    
+    # arm above
+    part = text[1:-1]
+    for i, l in enumerate(part):
+        mod_text += " "* (l_text*2-2) + part[i] + " "*(l_text*2-3) + rev_text[i+1] + "\n"
+    
+    # central line
+    line = text + rev_text[1:] + "\n"
+    mod_text += " ".join(list(line))
+    
+    # arm below
+    for i, l in enumerate(part):
+        mod_text +=part[i] + " "*(l_text*2-3) + rev_text[i+1] + "\n"
+    
+    # last line
+    line = text[-1] + " "*(l_text-2) + text
+    mod_text += " ".join(list(line)) + "\n"
+    
+    mod_text = "<code>" + mod_text + "</code>"        
+    
+    wiki_link = "https://en.m.wikipedia.org/wiki/Swastika"
+    linked_text = "<a href=\"{}\">info</a>".format(wiki_link)
+    mod_text +="<span class=\"tg-spoiler\">{}</span>".format(linked_text)
+       
+    return mod_text    
+
+
 # =============================================================================
 # Query option generation
 # =============================================================================
@@ -148,6 +212,12 @@ class ResultArticle:
         
         elif shape == "Echo":
             mod_text = echo(text)
+        
+        elif shape == "Zalgo":
+            mod_text = zalgo(text)
+        
+        elif shape == "Sauwastika":
+            mod_text = sauwastika(text)
             
         else:
             mod_text = text
@@ -156,7 +226,8 @@ class ResultArticle:
         if len(mod_text) < 4096:
 
             message = dict({"message_text": mod_text,
-                        "parse_mode":"HTML"}) 
+                        "parse_mode":"HTML",
+                        "disable_web_page_preview":True}) 
             text_id = hashlib.md5((shape + mod_text).encode()).hexdigest()
             
             
@@ -230,7 +301,7 @@ if __name__ == "__main__":
                         # available shapes
                         shapes = ["L shape" , "Diamond", "Cross",
                                   "Upside Down", "Fraktur", "Double Struck",
-                                  "Echo"]
+                                  "Echo", "Zalgo", "Sauwastika"]
                         
                         # array to be visualized as options
                         query_results_array = []
@@ -242,19 +313,20 @@ if __name__ == "__main__":
                          
                         # show the stuff
                         resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_results_array))
+                   
+                        if resp:
                         
-                        
-                        if resp.status_code == 200:
-                            print(inline_query.user, text)
-                        
-                        if resp.status_code == 400:
-                            print("ERROR: inline_query", text)
-                            respj = resp.json()
-                            if respj["description"] == "Bad Request: MESSAGE_TOO_LONG":
-                                res_article = ResultArticle("Bad request", "message too long")
-                                query_array = [res_article.result]
-                                resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_array))
-                                
+                            if resp.status_code == 200:
+                                print(inline_query.user, text)
+                            
+                            if resp.status_code == 400:
+                                print("ERROR: inline_query", text)
+                                respj = resp.json()
+                                if respj["description"] == "Bad Request: MESSAGE_TOO_LONG":
+                                    res_article = ResultArticle("Bad request", "message too long")
+                                    query_array = [res_article.result]
+                                    resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_array))
+                                    
                             
         # in case the message is not a query       
         except KeyError as e:

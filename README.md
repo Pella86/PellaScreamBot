@@ -2,12 +2,12 @@
 This is a small inline telegram bot that allows the user to send modifyied messages
 
 ## Table of Contents
-* [General Information](##General Information)
-* [Technologies](##Technologies)
-* [Features](##Features)
-* [Usage](##Usage)
-* [Project Status](##Project Status)
-* [To Do](##To Do)
+* [General Information](#general-information)
+* [Technologies](#technologies)
+* [Features](#features)
+* [Usage](#usage)
+* [Project Status](#project-status)
+* [To Do](#to-do)
 
 ## General Information
 * The bot takes a string as a input and transforms it in ascii art

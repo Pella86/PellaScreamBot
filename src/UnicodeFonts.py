@@ -9,6 +9,109 @@ Created on Tue Aug 23 08:32:54 2022
 import string
 
 
+class BaseConverter:
+    
+    def convert(self, text):
+        resulting_string = ""
+        for l in text:
+            
+            try:
+                resulting_string += self.convert_dict[l]
+            except KeyError:
+                resulting_string += l
+        return resulting_string
+                
+
+
+# =============================================================================
+# Upside Down
+# =============================================================================
+
+class UpsideDown(BaseConverter):
+    
+    def __init__(self):
+        self.convert_dict = {}
+        
+        self.convert_dict["a"] = "\u0250"
+        self.convert_dict["b"] = "q"
+        self.convert_dict["c"] = "\u0254"
+        self.convert_dict["d"] = "p"
+        self.convert_dict["e"] = "\u01DD"
+        self.convert_dict["f"] = "\u025F"
+        self.convert_dict["g"] = "\u0183"
+        self.convert_dict["h"] = "\u0265"
+        self.convert_dict["i"] = "\u1D09"
+        self.convert_dict["j"] = "\u027E"
+        self.convert_dict["k"] = "\u029E"
+        self.convert_dict["l"] = "l"
+        self.convert_dict["m"] = "\u026F"
+        self.convert_dict["n"] = "u"
+        self.convert_dict["o"] = "o"
+        self.convert_dict["p"] = "q"
+        self.convert_dict["q"] = "b"
+        self.convert_dict["r"] = "\u0279"
+        self.convert_dict["s"] = "s"
+        self.convert_dict["t"] = "\u0287"
+        self.convert_dict["u"] = "n"
+        self.convert_dict["v"] = "\u028C"
+        self.convert_dict["w"] = "\u028D"
+        self.convert_dict["x"] = "x"
+        self.convert_dict["y"] = "\u028E"
+        self.convert_dict["z"] = "z"
+        self.convert_dict["A"] = "\u2200"
+        self.convert_dict["B"] = "B"
+        self.convert_dict["C"] = "\u0186"
+        self.convert_dict["D"] = "D"
+        self.convert_dict["E"] = "\u018E"
+        self.convert_dict["F"] = "\u2132"
+        self.convert_dict["G"] = "\u200E\u05E4"
+        self.convert_dict["H"] = "H"
+        self.convert_dict["I"] = "I"
+        self.convert_dict["J"] = "\u017F"
+        self.convert_dict["K"] = "K"
+        self.convert_dict["L"] = "\u02E5"
+        self.convert_dict["M"] = "W"
+        self.convert_dict["N"] = "N"
+        self.convert_dict["O"] = "O"
+        self.convert_dict["P"] = "\u0500"
+        self.convert_dict["Q"] = "Q"
+        self.convert_dict["R"] = "\u1D1A"
+        self.convert_dict["S"] = "S"
+        self.convert_dict["T"] = "\u2534"
+        self.convert_dict["U"] = "\u2229"
+        self.convert_dict["V"] = "\u039B"
+        self.convert_dict["W"] = "M"
+        self.convert_dict["X"] = "X"
+        self.convert_dict["Y"] = "\u2144"
+        self.convert_dict["Z"] = "Z"
+        self.convert_dict["1"] = "\u0196"
+        self.convert_dict["2"] = "\u1105"
+        self.convert_dict["3"] = "\u0190"
+        self.convert_dict["4"] = "\u3123"
+        self.convert_dict["5"] = "\u03DB"
+        self.convert_dict["6"] = "9"
+        self.convert_dict["7"] = "\u3125"
+        self.convert_dict["8"] = "8"
+        self.convert_dict["9"] = "6"
+        self.convert_dict["0"] = "0"
+        self.convert_dict[","] = "'"
+        self.convert_dict["."] = "\u02D9"
+        self.convert_dict["?"] = "\u00BF"
+        self.convert_dict["!"] = "\u00A1"
+        self.convert_dict["\""] = ",,"
+        self.convert_dict["'"] = ","
+        self.convert_dict["`"] = ","
+        self.convert_dict["("] = ")"
+        self.convert_dict[")"] = "("
+        self.convert_dict["["] = "]"
+        self.convert_dict["]"] = "["
+        self.convert_dict["{"] = "}"
+        self.convert_dict["}"] = "{"
+        self.convert_dict["<"] = ">"
+        self.convert_dict[">"] = "<"
+        self.convert_dict["&"] = "\u214B"
+        self.convert_dict["_"] = "\u203E"        
+
 char_to_unicode = {}
 
 char_to_unicode["a"] = "\u0250"
@@ -102,6 +205,10 @@ def upside_down(text):
     return s
 
 
+# =============================================================================
+# Fraktur
+# =============================================================================
+
 def fraktur(text):
     start = 0x1D56C
     #end = 0x1D537
@@ -125,6 +232,10 @@ def fraktur(text):
             s += l
     
     return s
+
+# =============================================================================
+# Double struck
+# =============================================================================
 
 def double_struck(text):
     
@@ -166,6 +277,10 @@ def double_struck(text):
     
     return s    
 
+
+# =============================================================================
+# Echo
+# =============================================================================
 
 def subsup_unicode_map():
     #https://stackoverflow.com/questions/17908593/how-to-find-the-unicode-of-the-subscript-alphabet
@@ -273,9 +388,7 @@ def superscript_letter(letter):
 
 
 def echo_text(text):
-    
     s = ""
-    
     
     # subscript
     s += "".join(map(subscript_letter, text.lower()))
@@ -286,6 +399,52 @@ def echo_text(text):
     s += "".join(map(superscript_letter, text.lower()))
     
     return s
+
+# =============================================================================
+# Encase
+# =============================================================================
+
+def create_encase_dict():
+    encase_dict = {}
+    
+    # encased letters
+    ascii_upper = string.ascii_uppercase
+    alpha_code_start = 0x1f150
+    for l in ascii_upper:
+        encase_dict[l] = chr(alpha_code_start)
+        alpha_code_start += 1
+    
+    # encased numbers
+    numbers = "123456789"
+    number_code_start = 0x2776
+    for i, n in enumerate(numbers):
+        encase_dict[n] = chr(number_code_start)
+        number_code_start += 1
+    
+    encase_dict["0"] = chr(0x24FF)  
+    
+    return encase_dict
+
+encase_dict = create_encase_dict()
+
+
+def encase(text):
+    text = text.upper()
+    
+    s = ""
+    for letter in text:
+        try:
+            s += encase_dict[letter]
+        except KeyError:
+            s += letter
+    
+    return s
+
+    
+    
+
+
+        
 
 
 if __name__ == "__main__":
@@ -308,3 +467,8 @@ if __name__ == "__main__":
     print("echo")
     
     print(echo_text(sentence))
+    
+    
+    print("encase")
+    
+    print(encase(sentence))

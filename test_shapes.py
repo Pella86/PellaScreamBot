@@ -188,11 +188,6 @@ def echo(text):
     return s
 
 
-print(echo(text))
-
-
-
-
 strange_symbols = '''U+0068
 U+0334
 U+0350
@@ -426,8 +421,6 @@ U+0348
 
 set_symbols = set(strange_symbols.split("\n"))
 
-print(set_symbols)
-
 unique_symbols = []
 for c in set_symbols:
     if c and not (c in list("hello fuckers")):
@@ -445,36 +438,16 @@ for c in set_symbols:
             continue
         
         unique_symbols.append(char)
-        
-        # l = f"\\u{ord(char):0>4}"  
-        # print(l)
-        # unique_symbols.append(l)
-        
-# print(list(map(repr, unique_symbols)))
 
-# print("[", end="")
-# for s in unique_symbols[:-1]:
-#     print("\"" + s  + "\"" + ", ", end="")
-
-# print("\"" + unique_symbols[-1] + "\"" + "]")
-
-# my_symbols = ["\u0845", "\u0775", "\u0774", "\u0857", "\u0817", "\u0831", "\u0830", "\u0853", "\u0852", "\u0805", "\u0856", "\u0794", "\u0816", "\u0832", "\u0828", "\u0840", "\u0841", "\u0813", "\u0797", "\u0795", "\u0855", "\u0837", "\u0806", "\u0833", "\u0854", "\u0834", "\u0823", "\u0796", "\u0807", "\u0826", "\u0810", "\u0814", "\u0849", "\u0770", "\u0769", "\u0781", "\u0839", "\u0803", "\u0861", "\u0799", "\u0777", "\u0779", "\u0835", "\u0783", "\u0820", "\u0798", "\u0800", "\u0819", "\u0809", "\u0824", "\u0827", "\u0812", "\u0780", "\u0842", "\u0829", "\u0804", "\u0815", "\u0801", "\u0768", "\u0851", "\u0844", "\u0864", "\u0789", "\u0787", "\u0778", "\u0836", "\u0793", "\u0784", "\u0773", "\u0776", "\u0821", "\u0860", "\u0772", "\u0843", "\u0808", "\u0818", "\u0846", "\u0791", "\u0771", "\u0802", "\u0822", "\u0859", "\u0848"]
-# print(my_symbols)
-        
-        
-print(unique_symbols)
 
 my_symbols = ['͍', '̇', '̆', '͙', '̱', '̿', '̾', '͕', '͔', '̥', '͘', '̚', '̰', '̀', '̼', '͈', '͉', '̭', '̝', '̛', '͗', 'ͅ', '̦', '́', '͖', '͂', '̷', '̜', '̧', '̺', '̪', '̮', '͑', '̂', '́', '̍', '͇', '̣', '͝', '̟', '̉', '̋', '̓', '̏', '̴', '̞', '̠', '̳', '̩', '̸', '̻', '̬', '̌', '͊', '̽', '̤', '̯', '̡', '̀', '͓', '͌', '͠', '̕', '̓', '̊', '̈́', '̙', '̐', '̅', '̈', '̵', '͜', '̄', '͋', '̨', '̲', '͎', '̗', '̃', '̢', '̶', '͛', '͐']
 
-print(my_symbols)
 
 import random
 
 def demonize(text):
     s = ""
     for l in text:
-        n_symbols = random.randint(5, 10)
-        # c = l + "".join([random.choice(my_symbols) for i in range(n_symbols)])
         c = l.encode("utf-8") + random.choice(my_symbols).encode("utf-8")
         c = c.decode("utf-8")
         print(c)
@@ -483,4 +456,86 @@ def demonize(text):
     return(text)
 
 
-print(demonize(text))
+import string
+
+def encase(text):
+    
+    text = text.upper()
+    
+    ascii_upper = string.ascii_uppercase
+    
+    code_start = 0x1f150
+    
+    convert_dict = {}
+    
+    for l in ascii_upper:
+        convert_dict[l] = chr(code_start)
+        code_start += 1
+        
+    numbers = "123456789"
+    code_start = 0x2776
+    for i, n in enumerate(numbers):
+        convert_dict[n] = chr(code_start)
+        code_start += 1
+    
+    convert_dict["0"] = chr(0x24FF)
+    
+    
+    print(convert_dict)
+    
+    mod_text = ""
+    for letter in text:
+        try:
+            mod_text += convert_dict[letter]
+        except KeyError:
+            mod_text += letter
+    
+    return mod_text
+
+
+def cursive(text):
+    
+    code_start = 0x1D4D0
+    
+    convert_dict = {}
+    
+    letters = string.ascii_uppercase + string.ascii_lowercase
+    
+    for l in letters:
+        convert_dict[l] = chr(code_start)
+        code_start += 1
+        
+    s = ""
+    for l in text:
+        
+        try:
+            s += convert_dict[l]
+        
+        except KeyError:
+            s += l
+    return s
+        
+
+def spongebob(text):
+    s = ""
+    text = text.lower()
+    
+    for l in text:
+        r = random.randrange(2)
+        
+        if r == 1:
+            s += l.upper()
+
+        else:
+            s += l
+
+    return s
+        
+        
+        
+        
+    
+
+print(spongebob("The quick brown fox jumps over the lazy dog, 1234567890 1230"))
+        
+

@@ -49,6 +49,7 @@ class Requests:
             
             response = reqfunc(url, params)
             
+            
             return response
         
         else:
@@ -80,10 +81,12 @@ class Requests:
         while response is None:
             
             response = self.request(requests.post, url, params)
-            
-            if response and response.status_code != 200:
+
+            if response and (response.status_code != 200):
                print("ERROR: Requests: post: ", response.status_code, response.text)
                print(url, params)
+               
+               
            
             
             if response:

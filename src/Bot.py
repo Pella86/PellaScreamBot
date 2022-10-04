@@ -52,14 +52,13 @@ class Bot:
         self.telegram_api.answerCallbackQuery(callback_id, text=text)
         
     
-    def answerInlineQuery(self, query_id, query_list):
-        return self.telegram_api.answerInlineQuery(query_id, query_list)
-        
-    
     def editMessageText(self, chat_id, message_id, text, keyboard):
         '''Edit a message'''
         return self.telegram_api.editMessageText(text, chat_id=chat_id, message_id=message_id, reply_markup=keyboard.to_json())
 
+    def answerInlineQuery(self, query_id, query_list):
+        return self.telegram_api.answerInlineQuery(query_id, query_list)
+        
         
     def user_can_ban(self, group_id, user):
         return self.can_ban[(group_id, user.id)]

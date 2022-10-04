@@ -17,7 +17,7 @@ class ChatMember:
     def __init__(self, chat_member_json):
         self.status = chat_member_json["status"]
         self.user = User(chat_member_json["user"])
-        self.can_restrict_members = chat_member_json.get("chat_member_json")
+        self.can_restrict_members = chat_member_json.get("can_restrict_members")
         
     def __str__(self):
         return f"Chat member: {self.user} {self.status}"
@@ -123,6 +123,23 @@ class User:
         self.can_join_groups = user_json.get("can_join_groups")
         self.can_read_all_group_messages = user_json.get("can_read_all_group_messages")
         self.supports_inline_queries = user_json.get("supports_inline_queries")
+    
+    def has_changed(self, user):
+        
+        if self.first_name != user.first_name:
+            return True
+        
+        if self.last_name != user.last_name:
+            return True
+        
+        if self.username != user.username:
+            return True
+        
+        return False
+    
+    def get_mention_link(self):
+        s = "<a href=\"tg://user?id={}\">_{}_</a>".format(self.id, self.first_name)
+        return s
         
         
     def get_silent(self):
@@ -499,30 +516,36 @@ reply_markup	InlineKeyboardMarkup	Optional. Inline keyboard attached to the mess
 
 
 # =============================================================================
-# InlineQuery        
+# Inline query        
+# =============================================================================
+
+
+# =============================================================================
+# InlineQuery
 # =============================================================================
 
 class InlineQuery:
-    
+
     def __init__(self, inline_query_json):
         self.id = inline_query_json["id"]
         self.user = User(inline_query_json["from"])
         self.text = inline_query_json["query"]
         self.offset = inline_query_json["offset"]
-        
+
         self.chat_type = inline_query_json.get("chat_type")
         self.location = inline_query_json.get("location")
 
-       
+
 '''
 InlineQuery
 This object represents an incoming inline query. When the user sends an empty query, your bot could return some default or trending results.
 
-Field	Type	Description
-id	String	Unique identifier for this query
-from	User	Sender
-query	String	Text of the query (up to 256 characters)
-offset	String	Offset of the results to be returned, can be controlled by the bot
-chat_type	String	Optional. Type of the chat from which the inline query was sent. Can be either “sender” for a private chat with the inline query sender, “private”, “group”, “supergroup”, or “channel”. The chat type should be always known for requests sent from official clients and most third-party clients, unless the request was sent from a secret chat
-location	Location	Optional. Sender location, only for bots that request user location
+Field  Type    Description
+id     String  Unique identifier for this query
+from   User    Sender
+query  String  Text of the query (up to 256 characters)
+offset String  Offset of the results to be returned, can be controlled by the bot
+chat_type      String  Optional. Type of the chat from which the inline query was sent. Can be either <E2><80><9C>sender<E2><80><9D> for a private chat with the inline query sender, <E2><80><9C>private<E2><80><9D>, <E2><80><9C>group<E2><80><9D>, <E2><80><9C>supergroup<E2><80><9D>, or <E2><80><9C>channel<E2><80><9D>. The chat type should be always known for requests sent from official clients and most third-party clients, unless the request was sent from a secret chat
+location       Location        Optional. Sender location, only for bots that request user location
 '''
+       

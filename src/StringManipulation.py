@@ -4,13 +4,22 @@ Created on Tue Oct  4 12:56:35 2022
 
 @author: maurop
 """
+# =============================================================================
+# Imports
+# =============================================================================
 
 import hashlib
 import random
 
 import src.UnicodeFonts
 
+# =============================================================================
+# base class
+# =============================================================================
+
 class StringManipulationBase:
+    ''' Also this class is here in case more repetive functionalities gets added
+    for now it just packs the text between the code tags'''
     
     def pack_text(self, text):
         return  "<code>" + self.convert_fn(text) + "</code>"
@@ -223,6 +232,8 @@ class Spongebob(StringManipulationBase):
 # =============================================================================
     
 class ResultArticleGenerator:
+    ''' This class initializes all the possible types and generates the article
+    needed to be displayed on telegram'''
     
     def __init__(self):
         
@@ -246,13 +257,15 @@ class ResultArticleGenerator:
         # strip lose stuff
         text = text.strip()
         
+        # try to use a known shape else return the unmodified text
         mod_text = ""
         if shape in self.convert_text:
             mod_text = self.convert_text[shape].pack_text(text)
         else:
             print("Shape not found")
             mod_text = mod_text
-            
+        
+        # create the result articles
         if len(mod_text) < 4096:
 
             message = dict({"message_text": mod_text,

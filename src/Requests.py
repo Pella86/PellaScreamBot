@@ -83,12 +83,10 @@ class Requests:
             response = self.request(requests.post, url, params)
 
             if response and (response.status_code != 200):
-               print("ERROR: Requests: post: ", response.status_code, response.text)
-               print(url, params)
-               
-               
-           
-            
+                print("ERROR: Requests: post: ", response.status_code, response.text)
+                print(url, params)
+                return response
+
             if response:
                 return response            
 
@@ -106,7 +104,6 @@ class TelegramRequests:
         
         self.api_url = 'https://api.telegram.org/bot' + token + '/'   
         self.request = Requests()            
-    
     
     def getMe(self):
         url = self.api_url + "getMe"

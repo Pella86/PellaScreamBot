@@ -11,6 +11,9 @@ import string
 
 class BaseConverter:
     
+    '''Base class to convert the strings, it skips characters that are not known
+    could be a decorator but is here in case more stuff happens'''
+    
     def convert(self, text):
         resulting_string = ""
         for l in text:
@@ -315,8 +318,10 @@ class Encase(BaseConverter):
             number_code_start += 1
         
         self.convert_dict["0"] = chr(0x24FF)     
-     
 
+# =============================================================================
+# Cursive
+# =============================================================================
     
 class Cursive(BaseConverter):
     

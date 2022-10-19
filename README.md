@@ -2,6 +2,7 @@
 This is a small inline telegram bot that allows the user to send modifyied messages
 
 Example:
+
 <img src="https://github.com/Pella86/PellaScreamBot/blob/main/readme_pic/readme_picture.jpg" width="256">
 
 ## Table of Contents

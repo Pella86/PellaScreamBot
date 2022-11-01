@@ -10,7 +10,7 @@ import pathlib
 import pickle
 import json
 
-import src.Requests
+import src.telegram.Requests
 
 # =============================================================================
 # Database
@@ -79,7 +79,7 @@ class Update:
             
             # request the updates from the api
             params = {"offset": self.index}
-            r = src.Requests.tg_requests.getUpdates(params)   
+            r = src.telegram.Requests.tg_requests.getUpdates(params)   
             rjson = r.json()     
             
             

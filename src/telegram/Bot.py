@@ -4,11 +4,11 @@ Created on Thu Aug 25 15:32:34 2022
 
 @author: maurop
 """
-from src.Requests import tg_requests
+from src.telegram.Requests import tg_requests, tg_get_file, tg_send_file
 
-import src.TelegramObjects as tg_obj
+import src.telegram.TelegramObjects as tg_obj
 
-import src.MemberCache
+import src.telegram.MemberCache
 
 
 # =============================================================================
@@ -19,7 +19,7 @@ class Bot:
     '''Bot class: simple telegram requests manage'''
     
     telegram_api = tg_requests
-
+    
     def __init__(self):
         '''Initialize the bot and use get me as a logging tool'''
         r = self.telegram_api.getMe()
@@ -28,13 +28,17 @@ class Bot:
         self.info = tg_obj.User(rjson["result"])
         print("Bot:", self.info)
         
-        self.can_ban = src.MemberCache.CanBanMember()
+        self.can_ban = src.telegram.MemberCache.CanBanMember()
+        
+        
 
     def sendMessage(self, chat_id, text, parse_mode="HTML"):
         '''Send a general text message '''
         params= {"chat_id":chat_id,
                  "text":text,
                  "parse_mode":parse_mode}
+        
+        print("sending message...")
                 
         return self.telegram_api.sendMessage(params)  
         
@@ -57,7 +61,8 @@ class Bot:
         return self.telegram_api.editMessageText(text, chat_id=chat_id, message_id=message_id, reply_markup=keyboard.to_json())
 
     def answerInlineQuery(self, query_id, query_list):
-        return self.telegram_api.answerInlineQuery(query_id, query_list)        
+        return self.telegram_api.answerInlineQuery(query_id, query_list)
+        
         
     def user_can_ban(self, group_id, user):
         return self.can_ban[(group_id, user.id)]
@@ -93,6 +98,9 @@ class Bot:
             print(admin_user, "doesnt have the permission to ban")
             return False
         
+    def get_image_filename(self, file_id):
+        return tg_get_file.get_image_filename(file_id)
+        
 
     def kick_user_reply(self, admin_user, group_id, banned_user):
         print("kick user function...")
@@ -114,3 +122,11 @@ class Bot:
                     print(resp.json())
         else:          
             self.sendMessage(group_id, "you dont have the permissions to ban")
+            
+    
+    def sendPhoto(self, chat_id, filename):
+        return tg_send_file.sendPhoto(chat_id, filename)
+    
+    def sendDocument(self, chat_id, filename):
+        return tg_send_file.sendDocument(chat_id, filename)
+        

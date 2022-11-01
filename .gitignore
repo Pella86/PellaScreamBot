@@ -3,3 +3,4 @@ bot_token/
 logs/
 databases/
 profile_pic/
+src/__pycache__/

@@ -13,18 +13,20 @@ import time
 import json
 import traceback
 
-import src.Requests
-import src.Updater
-import src.Bot
+import src.telegram.Updater as Updater
+import src.telegram.Bot as Bot
+import src.telegram.TelegramObjects as tg_obj
+
 import src.UnicodeFonts
-import src.TelegramObjects as tg_obj
 import src.StringManipulation
+
+from src.telegram.Requests import TelegramRequestError
    
 # =============================================================================
 # Pella scream bot
 # =============================================================================
     
-class PellaScreamBot(src.Bot.Bot):
+class PellaScreamBot(Bot.Bot):
     
     def __init__(self):
         super().__init__()
@@ -45,7 +47,7 @@ if __name__ == "__main__":
     bot = PellaScreamBot()
     
     # start the messsage updater
-    updater = src.Updater.Update()
+    updater = Updater.Update()
     
     # start the various dictionaries for converting unicode text
     string_manipulation = src.StringManipulation.ResultArticleGenerator()
@@ -90,20 +92,10 @@ if __name__ == "__main__":
                          
                         # show the stuff
                         resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_results_array))
-                   
-                        if resp:
                         
-                            if resp.status_code == 200:
-                                print(inline_query.user, text)
-                            
-                            if resp.status_code == 400:
-                                print("ERROR: inline_query", text)
-                                respj = resp.json()
-                                if respj["description"] == "Bad Request: MESSAGE_TOO_LONG":
-                                    res_article = string_manipulation.generate("message too long", "Bad request")
-                                    query_array = [res_article]
-                                    resp = bot.answerInlineQuery(inline_query.id, json.dumps(query_array))
-                                    
+                        if resp.status_code == 200:
+                            print(inline_query.user, text)
+   
                             
         # in case the message is not a query       
         except KeyError as e:
@@ -114,5 +106,8 @@ if __name__ == "__main__":
             # print where the message
             print("------ message parsing error --------")
             print(json.dumps(update, indent=4))
+            
+        except TelegramRequestError as e:
+            print(e)
             
             
